@@ -2,7 +2,7 @@ import argparse
 import os
 import requests
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -22,6 +22,23 @@ class AOCSession:
             return response.text.strip()
         else:
             raise Exception(f"Failed to get input: {response.status_code}")
+
+def wait_until_unlock(day, year):
+    """Wait until puzzle unlocks at 9PM PT"""
+    pt_tz = ZoneInfo("America/Los_Angeles")
+    now = datetime.now(pt_tz)
+
+    # Create unlock time (9PM PT on the day before)
+    unlock_time = datetime(year, 12, day, 21, 0, tzinfo=pt_tz)
+    if now.hour < 21:  # If it's before 9PM, puzzle unlocks today
+        unlock_time = unlock_time - timedelta(days=1)
+
+    if now < unlock_time:
+        wait_seconds = (unlock_time - now).total_seconds()
+        print(f"Waiting for puzzle to unlock at {unlock_time.strftime('%I:%M %p PT')}")
+        print(f"Time until unlock: {wait_seconds/60:.1f} minutes")
+        time.sleep(wait_seconds)
+        print("\nPuzzle unlocked! 🎄")
 
 def get_solution_template(year, day):
     return f'''
@@ -130,11 +147,16 @@ if __name__ == "__main__":
                        help='Day number (1-25), defaults to current PT day (or previous day before 9PM PT)')
     parser.add_argument('--year', type=int, default=2024,
                        help='Year (defaults to 2024)')
+    parser.add_argument('--wait', action='store_true',
+                       help='Wait until puzzle unlocks at 9PM PT if needed')
 
     args = parser.parse_args()
 
     # Validate day
     if not 1 <= args.day <= 25:
         parser.error("Day must be between 1 and 25")
+
+    if args.wait:
+      wait_until_unlock(args.day, args.year)
 
     setup_day(args.year, args.day)
