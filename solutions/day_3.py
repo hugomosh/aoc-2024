@@ -3,16 +3,18 @@ from typing import Any
 import time
 import re
 
+
 def parse_input(data: str) -> Any:
     """Parse the puzzle input."""
     print("🔄 Parsing input...")
     pattern = r"mul\((\d+),(\d+)\)"
     matches = re.findall(pattern, data)
-    lines = data.split('\n')
+    lines = data.split("\n")
     """ for l in lines:
       matches = re.findall(pattern, l)
       print(matches) """
     return matches
+
 
 def parse_input2(data: str) -> Any:
     """Parse the puzzle input."""
@@ -22,13 +24,14 @@ def parse_input2(data: str) -> Any:
     enabled = True
     m = []
     for s in sections:
-      if(s == "do()" or s == "don't()"):
-        enabled = s == "do()"
-        continue
-      if enabled:
-        m = m + re.findall(pattern, s)
+        if s == "do()" or s == "don't()":
+            enabled = s == "do()"
+            continue
+        if enabled:
+            m = m + re.findall(pattern, s)
 
     return m
+
 
 def solve_part1(parsed_data: Any) -> Any:
     """Solve part 1 of the puzzle."""
@@ -36,11 +39,13 @@ def solve_part1(parsed_data: Any) -> Any:
     total = sum(int(x) * int(y) for x, y in parsed_data)
     return total
 
+
 def solve_part2(parsed_data: Any) -> Any:
     """Solve part 2 of the puzzle."""
     print("🎯 Solving part 2...")
     total = sum(int(x) * int(y) for x, y in parsed_data)
     return total
+
 
 # Uncomment and modify test data as needed
 test_input = """
@@ -59,7 +64,7 @@ if __name__ == "__main__":
     parsed_data = parse_input(input_data)
 
     # Optional: Run tests
-    if 'test_input' in globals():
+    if "test_input" in globals():
         print("🧪 Running tests...")
         test_parsed = parse_input(test_input)
         test_parsed2 = parse_input2(test_input2)
