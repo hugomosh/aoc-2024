@@ -3,27 +3,24 @@ from typing import Any
 import time
 
 
-def parse_input(data: str) -> Any:
+def parse_input(data: str) -> tuple[list[int], list[int]]:
     """Parse the puzzle input."""
     print("🔄 Parsing input...")
-    lines = data.strip().split("\n")
-    list1 = []
-    list2 = []
-    for line in lines:
-        e1, e2 = map(int, line.split())
-        list1.append(e1)
-        list2.append(e2)
-    return (list1, list2)
+
+    pairs = [
+        (int(e1), int(e2))
+        for line in data.strip().splitlines()
+        for e1, e2 in [line.split()]
+    ]
+
+    return [e1 for e1, e2 in pairs], [e2 for e1, e2 in pairs]
 
 
-def solve_part1(parsed_data: Any) -> Any:
+def solve_part1(parsed_data: tuple[list[int], list[int]]) -> int:
     """Solve part 1 of the puzzle."""
     print("🎯 Solving part 1...")
     list1, list2 = parsed_data
-    list1.sort()
-    list2.sort()
-    diff = sum(abs(e2 - e1) for e1, e2 in zip(list1, list2))
-    print(diff)
+    diff = sum(abs(e2 - e1) for e1, e2 in zip(sorted(list1), sorted(list2)))
     return diff
 
 

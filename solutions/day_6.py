@@ -5,10 +5,6 @@ from typing import Any
 directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]
 
 
-def help():
-    print(1836)
-
-
 def add_tuples(tuple1, tuple2):
     return tuple(x + y for x, y in zip(tuple1, tuple2))
 
@@ -102,10 +98,10 @@ def solve_part2(matrix: Any) -> Any:
     count = 0
     for x in positions:
         if matrix[x[0]][x[1]] == ".":
-            m = copy.deepcopy(matrix)
-            m[x[0]][x[1]] = "#"
+            matrix[x[0]][x[1]] = "#"
             # print('\n'.join(''.join(map(str, row)) for row in m))
-            count += solve_loop(m, original, 0)
+            count += solve_loop(matrix, original, 0)
+            matrix[x[0]][x[1]] = "."
     return count
 
 
