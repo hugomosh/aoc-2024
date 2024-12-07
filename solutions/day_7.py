@@ -15,16 +15,14 @@ def parse_input(data: str) -> Any:
 
 
 def generate_ternary_numbers(n, length):
-    """Generates a list of ternary numbers up to n-1, padded with trailing zeros to a specific length."""
-    ternary_numbers = []
+    """Yields ternary numbers up to n-1, padded with trailing zeros to a specific length."""
     for i in range(n):
         ternary_num = ""
-        while i > 0:
-            ternary_num = str(i % 3) + ternary_num
-            i //= 3
-        ternary_num = ternary_num.zfill(length)
-        ternary_numbers.append(ternary_num)
-    return ternary_numbers
+        num = i
+        while num > 0:
+            ternary_num = str(num % 3) + ternary_num
+            num //= 3
+        yield ternary_num.zfill(length)
 
 
 def solve_part1(parsed_data: Any) -> Any:
@@ -65,10 +63,8 @@ def solve_part2(parsed_data: Any) -> Any:
     for goal, nums in parsed_data:
         n = len(nums) - 1
         a = nums
-        # print(goal, n, 2**n, nums)
-        operators = {"0": "+", "1": "x"}
         for binary_str in generate_ternary_numbers(3**n, n):
-            #print(binary_str)
+            # print(binary_str)
             result = 0
             if binary_str[0] == "0":
                 result = a[0] + a[1]
@@ -78,7 +74,6 @@ def solve_part2(parsed_data: Any) -> Any:
                 result = int(f"{a[0]}{a[1]}")
 
             for i in range(1, len(binary_str)):
-                #print(goal, result, operators.get(binary_str[i], "||"), a[i + 1])
                 if binary_str[i] == "0":
                     result = result + a[i + 1]
                 elif binary_str[i] == "1":
@@ -86,13 +81,9 @@ def solve_part2(parsed_data: Any) -> Any:
                 else:
                     result = int(f"{result}{a[i + 1]}")
                 if goal < result:
-                    # over
-                    # print("over", goal, result)
                     break
 
             if goal == result:
-                #print("GOAL")
-                #print("res", result, binary_str)
                 count += goal
                 break
     return count
