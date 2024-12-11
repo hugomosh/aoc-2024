@@ -1,6 +1,6 @@
 import time
 from typing import Any
-from collections import defaultdict
+from collections import Counter
 from functools import lru_cache
 
 
@@ -125,7 +125,7 @@ def process_number(num: int, level: int) -> int:
         return process_number(2024 * num, level - 1)
 
 
-def solve_part2(parsed_data: Any) -> Any:
+def solve_part2_memoization(parsed_data: Any) -> Any:
     """Solve part 2 using memoization."""
     print("🎯 Solving part 2...")
 
@@ -136,6 +136,27 @@ def solve_part2(parsed_data: Any) -> Any:
 
     print(process_number.cache_info())
     return total
+
+
+def solve_part2(parsed_data: Any) -> Any:
+    """Solve part 2 using memoization."""
+    print("🎯 Solving part 2...")
+    m = Counter(str(x) for x in parsed_data)
+
+    for _ in range(75):
+        t = Counter()
+        for x, n in m.items():
+            if x < "1":  # Compare strings, handles '0' case
+                nums = ["1"]
+            elif len(x) % 2:
+                nums = [str(int(x) * 2024)]  # Convert back to string
+            else:
+                mid = len(x) // 2
+                nums = [x[:mid], x[mid:]]  # Already strings, no need to convert
+            for num in nums:
+                t[num] += n
+        m = t
+    return sum(m.values())
 
 
 # # Uncomment and modify test data as needed
