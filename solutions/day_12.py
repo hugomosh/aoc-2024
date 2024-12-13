@@ -19,7 +19,7 @@ def get_neighbors(current, mapa):
 
 
 def get_corners(current, mapa):
-    res = 0
+    corners = 0
     v = mapa[current]
     DOWN = 1 + 0j
     UP = -1 + 0j
@@ -37,13 +37,10 @@ def get_corners(current, mapa):
         and get_val(current + UP + LEFT) != v
     ):
         # left top inverse corner
-        res += 1
-    if (
-        get_val(current + UP) != v
-        and get_val(current + LEFT) != v
-    ):
+        corners += 1
+    if get_val(current + UP) != v and get_val(current + LEFT) != v:
         # left top inside corner
-        res += 1
+        corners += 1
 
     # Top Right corners
     if (
@@ -52,13 +49,10 @@ def get_corners(current, mapa):
         and get_val(current + UP + RIGHT) != v
     ):
         # right top inverse corner
-        res += 1
-    if (
-        get_val(current + UP) != v
-        and get_val(current + RIGHT) != v
-    ):
+        corners += 1
+    if get_val(current + UP) != v and get_val(current + RIGHT) != v:
         # right top inside corner
-        res += 1
+        corners += 1
 
     # Bottom Left corners
     if (
@@ -67,13 +61,10 @@ def get_corners(current, mapa):
         and get_val(current + DOWN + LEFT) != v
     ):
         # left bottom inverse corner
-        res += 1
-    if (
-        get_val(current + DOWN) != v
-        and get_val(current + LEFT) != v
-    ):
+        corners += 1
+    if get_val(current + DOWN) != v and get_val(current + LEFT) != v:
         # left bottom inside corner
-        res += 1
+        corners += 1
 
     # Bottom Right corners
     if (
@@ -82,15 +73,12 @@ def get_corners(current, mapa):
         and get_val(current + DOWN + RIGHT) != v
     ):
         # right bottom inverse corner
-        res += 1
-    if (
-        get_val(current + DOWN) != v
-        and get_val(current + RIGHT) != v
-    ):
+        corners += 1
+    if get_val(current + DOWN) != v and get_val(current + RIGHT) != v:
         # right bottom inside corner
-        res += 1
+        corners += 1
 
-    return res
+    return corners
 
 
 def solve_part1(mapa: Dict[complex, str]) -> Any:
