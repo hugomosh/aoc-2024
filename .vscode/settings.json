@@ -3,5 +3,6 @@
     "cSpell.words": [
         "antinodes",
         "mapa"
-    ]
+    ],
+    "editor.wordWrapColumn": 120
 }
