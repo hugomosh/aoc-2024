@@ -1,6 +1,12 @@
 import time
 from typing import Any
 
+import os
+
+
+def clear_screen():
+    os.system("cls" if os.name == "nt" else "clear")
+
 
 def parse_input(data: str) -> Any:
     """Parse the puzzle input."""
@@ -36,7 +42,7 @@ def print_matrix(mapa):
 def move(i, pos, mapa):
     dic = {"<": -1, ">": 1, "^": -1j, "v": 1j}
     next_pos = dic[i] + pos
-    # print(dic[i], pos, next_pos)
+    # print(dic[i], pos, next_pos, mapa[next_pos])
     if not next_pos in mapa.keys():
         return (False, pos)
     if mapa[next_pos] == "#":
@@ -45,19 +51,23 @@ def move(i, pos, mapa):
         mapa[next_pos] = mapa[pos]
         mapa[pos] = "."
         return (True, next_pos)
-    if mapa[next_pos] == "O":
+    if mapa[next_pos] in ["O", "[", "]"]:
         can_move = move(i, next_pos, mapa)
+        # print(can_move)
         if can_move[0]:
             mapa[next_pos] = mapa[pos]
             mapa[pos] = "."
             return (True, next_pos)
         else:
             return (False, pos)
+    print("err:", mapa[next_pos], i, pos)
 
-def move2(i, [pos], mapa):
+
+def move2(i, pos, mapa):
     dic = {"<": -1, ">": 1, "^": -1j, "v": 1j}
+    if dic[i].imag == 0:
+        return move(i, pos, mapa)
     next_pos = dic[i] + pos
-    # print(dic[i], pos, next_pos)
     if not next_pos in mapa.keys():
         return (False, pos)
     if mapa[next_pos] == "#":
@@ -66,14 +76,36 @@ def move2(i, [pos], mapa):
         mapa[next_pos] = mapa[pos]
         mapa[pos] = "."
         return (True, next_pos)
-    if mapa[next_pos] == "O":
-        can_move = move(i, next_pos, mapa)
-        if can_move[0]:
-            mapa[next_pos] = mapa[pos]
-            mapa[pos] = "."
-            return (True, next_pos)
+    level = 0
+    queue = [(0, set([pos]))]
+
+    while True:
+        next_level_queue = set()
+        for n in queue[-1][1]:
+            if mapa[n + dic[i]] == "#":
+                return (False, pos)
+            if mapa[n + dic[i]] == "[":
+                next_level_queue.add(n + dic[i])
+                next_level_queue.add(n + dic[i] + 1)
+                continue
+            if mapa[n + dic[i]] == "]":
+                next_level_queue.add(n + dic[i])
+                next_level_queue.add(n + dic[i] - 1)
+                continue
+        if next_level_queue:
+            level += 1
+            # print(queue, next_level_queue)
+            queue.append((level, next_level_queue))
         else:
-            return (False, pos)
+            break
+    # print(queue)
+    while queue:
+        q = queue.pop()
+        for x in q[1]:
+            t = move(i, x, mapa)
+        if q[0] == 0:
+            return t
+    return (False, pos)
 
 
 def gps(mapa):
@@ -84,7 +116,7 @@ def gps(mapa):
     res = 0
     for h in range(height):
         for w in range(width):
-            if mapa[w + h * 1j] == "O":
+            if mapa[w + h * 1j] in ["O", "["]:
                 res += int(h * 100 + w)
     return res
 
@@ -132,18 +164,22 @@ def expand_mapa(mapa):
 def solve_part2(parsed_data: Any) -> Any:
     """Solve part 2 of the puzzle."""
     print("🎯 Solving part 2...")
-    mapa, instructions, pos = parsed_data
+    mapa, instructions, _ = parsed_data
     instructions = [i for l in instructions for i in l]
-    print_matrix(mapa)
+    # print_matrix(mapa)
 
     emapa, origin = expand_mapa(mapa)
+    # print_matrix(emapa)
+    for indx, i in enumerate(instructions):
+        (_, origin) = move2(i, origin, emapa)
+        if indx % 10 == 0:
+            print_matrix(emapa)
+            print(indx, i)
+            clear_screen()
+        # wait = input("Press enter")
     print_matrix(emapa)
-    for i in instructions:
-        (_, pos) = move2(i, [pos], emapa)
-        print_matrix(emapa)
 
-
-    return 0
+    return gps(emapa)
 
 
 # Uncomment and modify test data as needed
@@ -189,12 +225,12 @@ if __name__ == "__main__":
 
     # Solve part 1
     start_time = time.time()
-    answer1 = solve_part1(parsed_data)
+    # answer1 = solve_part1(parsed_data)
     time1 = time.time() - start_time
-    print(f"✨ Part 1 answer: {answer1} (took {time1:.2f}s)\n")
+    # print(f"✨ Part 1 answer: {answer1} (took {time1:.2f}s)\n")
 
     # Solve part 2
     start_time = time.time()
-    # answer2 = solve_part2(parsed_data)
+    answer2 = solve_part2(parsed_data)
     time2 = time.time() - start_time
     print(f"✨ Part 2 answer: {answer2} (took {time2:.2f}s)")
