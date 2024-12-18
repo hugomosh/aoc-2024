@@ -1,5 +1,6 @@
 import time
 from typing import Any
+from collections import deque
 
 
 def parse_input(data: str) -> Any:
@@ -69,9 +70,9 @@ def solve_part2(parsed_data: Any) -> Any:
 
     visited = {}  # to keep cost
     visited[(start, 1)] = 0
-    queue = [(start, 1)]  # facing east
+    queue = deque([(start, 1)])  # facing east
     while queue:
-        c = queue.pop(0)
+        c = queue.popleft()
         for n, d in possible_directions(c, mapa):
             cost = 1 if d == c[1] else 1001
             if (n, d) in visited:
@@ -92,26 +93,32 @@ def solve_part2(parsed_data: Any) -> Any:
                 best = visited[x]
                 best_x = x
 
-    next_level = [best_x]
-    spots = set([best_x[0]])  # Keep track of positions only
+    # Backwards search using possible previous positions
+    next_level = deque([best_x])
+    spots = {best_x[0]}
+    seen_states = {best_x}  # Prevent revisiting same state
 
-    # Work backwards from the goal
     while next_level:
-        current = next_level.pop(0)
-        current_pos, current_dir = current
-        current_cost = visited[current]
+        current_pos, current_dir = next_level.popleft()
+        current_cost = visited[(current_pos, current_dir)]
 
-        # Check all neighbors that could lead to this position
-        for pos, dir in visited.keys():
-            # For complex numbers, absolute difference of 1 means adjacent
-            if (
-                abs(pos - current_pos) == 1
-                and visited[(pos, dir)] + (1 if dir == current_dir else 1001)
-                == current_cost
-            ):
-                # This position is part of a best path
-                next_level.append((pos, dir))
-                spots.add(pos)
+        # Calculate possible previous positions
+        # For complex numbers, possible moves are ±1 and ±1j
+        possible_prev = [current_pos + d for d in [1, -1, 1j, -1j]]
+
+        for prev_pos in possible_prev:
+            # For each possible previous position, check both same direction and turn
+            for prev_dir in [current_dir, 1j * current_dir, -1j * current_dir]:
+                prev_state = (prev_pos, prev_dir)
+                if (
+                    prev_state in visited
+                    and prev_state not in seen_states
+                    and visited[prev_state] + (1 if prev_dir == current_dir else 1001)
+                    == current_cost
+                ):
+                    next_level.append(prev_state)
+                    seen_states.add(prev_state)
+                    spots.add(prev_pos)
 
     return len(spots)
 

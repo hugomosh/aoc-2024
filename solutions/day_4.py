@@ -1,7 +1,6 @@
 import time
 from typing import Any
 
-
 def parse_input(data: str) -> Any:
     """Parse the puzzle input."""
     print("🔄 Parsing input...")
