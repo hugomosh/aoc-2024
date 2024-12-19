@@ -65,8 +65,9 @@ def solve_part2(parsed_data: Any) -> Any:
     (registers, program) = parsed_data
     registers = registers.copy()
     print(registers, program)
+    start = 54212096*64
     goal = "".join([str(x) for x in program])
-    for x in range(100):
+    for x in range(start, start * 8**10, 8):
         registers["A"] = x + parsed_data[0]["A"]
         registers["B"] = 0
         registers["C"] = 0
@@ -102,7 +103,7 @@ def solve_part2(parsed_data: Any) -> Any:
             pointer += 2
         print(registers)
         res = "".join([str(x) for x in output])
-        print(goal, res == goal, res)
+        print(goal, res == goal, res, x)
         if res == goal:
             print(x, res)
             return x
