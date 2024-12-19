@@ -18,7 +18,16 @@ def parse_input(data: str) -> Any:
 def solve_part1_regex(parsed_data: Any) -> Any:
     """Solve part 1 of the puzzle."""
     print("🎯 Solving part 1...")
-
+    res = []
+    pattern = "^("
+    for b in blocks:
+        pattern += f"{b}|"
+    pattern += ")+$"
+    pattern = re.compile(pattern)
+    matches = [line for line in lines if pattern.match(line)]
+    print(pattern)
+    print(matches)
+    return len(matches)
 
 def solve_part1(parsed_data: Any) -> Any:
     """Solve part 1 of the puzzle."""
