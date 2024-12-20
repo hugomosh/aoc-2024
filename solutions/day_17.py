@@ -66,9 +66,10 @@ def solve_part2(parsed_data: Any) -> Any:
     registers = registers.copy()
     print(registers, program)
     start = 54212096*64
-    goal = "".join([str(x) for x in program])
-    for x in range(start, start * 8**10, 8):
-        registers["A"] = x + parsed_data[0]["A"]
+    goal = ",".join([str(x) for x in program])
+    for binary_string in ['11110011111011',]:
+        x= int(binary_string, 2)
+        registers["A"] = x
         registers["B"] = 0
         registers["C"] = 0
         pointer = 0
@@ -95,15 +96,15 @@ def solve_part2(parsed_data: Any) -> Any:
                 registers["B"] = registers["B"] ^ registers["C"]
             elif opcode == 5:  # out
                 output.append(combo % 8)
-                # print("output", combo % 8)
+                #print("output", combo % 8)
             elif opcode == 6:  # bdv
                 registers["B"] = registers["A"] // (2**combo)  # truncated
             elif opcode == 7:  # cdv
                 registers["C"] = registers["A"] // (2**combo)  # truncated
             pointer += 2
-        print(registers)
-        res = "".join([str(x) for x in output])
-        print(goal, res == goal, res, x)
+        #print(registers)
+        res = ",".join([str(x) for x in output])
+        print(binary_string, res)
         if res == goal:
             print(x, res)
             return x
