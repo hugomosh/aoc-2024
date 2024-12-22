@@ -32,8 +32,8 @@ def solve_part1(parsed_data: Any) -> Any:
         combo = [0, 1, 2, 3, registers["A"], registers["B"], registers["C"], None][
             literal
         ]
-        print("pointer, opcode, literal, combo")
-        print(registers, pointer, opcode, literal, combo)
+        #print("pointer, opcode, literal, combo")
+        #print(registers, pointer, opcode, literal, combo)
         if opcode == 0:  # adv
             registers["A"] = registers["A"] // (2**combo)  # truncated
         elif opcode == 1:
@@ -48,15 +48,32 @@ def solve_part1(parsed_data: Any) -> Any:
             registers["B"] = registers["B"] ^ registers["C"]
         elif opcode == 5:  # out
             output.append(combo % 8)
-            print("output", combo % 8)
+            #print("output", combo % 8)
         elif opcode == 6:  # bdv
             registers["B"] = registers["A"] // (2**combo)  # truncated
         elif opcode == 7:  # cdv
             registers["C"] = registers["A"] // (2**combo)  # truncated
         pointer += 2
-    print(registers)
-    res = ",".join([str(x) for x in output])
-    return res
+    #print(registers)
+    #res = ",".join([str(x) for x in output])
+    return output
+
+
+def solve_part2a(parsed_data: Any) -> Any:
+    """Solve part 2 of the puzzle."""
+    print("🎯 Solving part 2...")
+    (registers, program) = parsed_data
+    registers = registers.copy()
+
+    def find_sequence(target_outputs, A = ""):
+        if len(target_outputs) == 0:
+            return A if A else None
+        target = target_outputs[0]
+
+        for ending in range(8):
+            B = format(ending,'03b')
+            if "000" == 0:
+                return 1
 
 
 def solve_part2(parsed_data: Any) -> Any:
@@ -64,11 +81,11 @@ def solve_part2(parsed_data: Any) -> Any:
     print("🎯 Solving part 2...")
     (registers, program) = parsed_data
     registers = registers.copy()
-    print(registers, program)
-    start = 54212096*64
+    # print(registers, program)
+    start = 54212096 * 64
     goal = ",".join([str(x) for x in program])
-    for binary_string in ['11110011111011',]:
-        x= int(binary_string, 2)
+    for binary_string in [" 010  110  000 101 000"]:
+        x = int(binary_string.replace(" ", ""), 2)
         registers["A"] = x
         registers["B"] = 0
         registers["C"] = 0
@@ -81,7 +98,6 @@ def solve_part2(parsed_data: Any) -> Any:
                 literal
             ]
             # print("pointer, opcode, literal, combo")
-            # print(registers, pointer, opcode, literal, combo)
             if opcode == 0:  # adv
                 registers["A"] = registers["A"] // (2**combo)  # truncated
             elif opcode == 1:
@@ -96,13 +112,15 @@ def solve_part2(parsed_data: Any) -> Any:
                 registers["B"] = registers["B"] ^ registers["C"]
             elif opcode == 5:  # out
                 output.append(combo % 8)
-                #print("output", combo % 8)
+                # print("output", combo % 8)
             elif opcode == 6:  # bdv
                 registers["B"] = registers["A"] // (2**combo)  # truncated
             elif opcode == 7:  # cdv
+                #print(registers["A"] ,bin(registers["A"]),combo)
                 registers["C"] = registers["A"] // (2**combo)  # truncated
             pointer += 2
-        #print(registers)
+            #print( pointer, opcode, literal, combo)
+            #print(registers)
         res = ",".join([str(x) for x in output])
         print(binary_string, res)
         if res == goal:

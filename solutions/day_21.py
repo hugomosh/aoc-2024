@@ -8,7 +8,25 @@ def parse_input(data: str) -> Any:
     lines = [[x for x in l] for l in data.strip().splitlines()]
     print(lines)
     return lines
+"""
++---+---+---+
+| 7 | 8 | 9 |
++---+---+---+
+| 4 | 5 | 6 |
++---+---+---+
+| 1 | 2 | 3 |
++---+---+---+
+    | 0 | A |
+    +---+---+
+"""
 
+"""
+    +---+---+
+    | ^ | A |
++---+---+---+
+| < | v | > |
++---+---+---+
+"""
 
 def solve_part1(parsed_data: Any) -> Any:
     """Solve part 1 of the puzzle."""
