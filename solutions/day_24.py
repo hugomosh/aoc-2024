@@ -2,6 +2,9 @@ import time
 from typing import Any
 from collections import defaultdict, deque
 import re
+import networkx as nx
+import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
 
 logical_ops = {
     "AND": lambda x, y: x and y,  # Boolean AND
@@ -54,6 +57,101 @@ def solve_part2(parsed_data: Any) -> Any:
     """Solve part 2 of the puzzle."""
     print("🎯 Solving part 2...")
     (init, instructions) = parsed_data
+    G = nx.DiGraph()
+
+    # Color mapping for operations
+    op_colors = {
+        "AND": "#FFA07A",  # Light salmon
+        "OR": "#98FB98",  # Pale green
+        "XOR": "#87CEFA",  # Light sky blue
+    }
+
+    # Add initial nodes with layer information
+    for k, v in init:
+        G.add_node(k, value=v, type="input", layer=0)
+
+    # Process instructions
+    solve = deque(instructions)
+    for i, inst in enumerate(instructions):
+        a, op, b, res = inst
+        op_node = f"{op}_{i}"
+
+        # Add nodes with layer information
+        G.add_node(a, type="inter", layer=1)
+        G.add_node(b, type="inter", layer=1)
+        G.add_node(op_node, type="oper", op=op, layer=2)
+        G.add_node(res, type="inter", layer=3)
+
+        # Add edges
+        G.add_edge(a, op_node)
+        G.add_edge(b, op_node)
+        G.add_edge(op_node, res)
+
+    # Create layout using multipartite layout instead of spring_layout
+    pos = nx.multipartite_layout(G, subset_key="layer")
+
+    # Plot
+    plt.figure(figsize=(20, 12))
+
+    # Draw nodes by type
+    # Input nodes
+    input_nodes = [n for n, d in G.nodes(data=True) if d.get("type") == "input"]
+    nx.draw_networkx_nodes(
+        G,
+        pos,
+        nodelist=input_nodes,
+        node_color="lightgreen",
+        node_shape="o",
+        node_size=1000,
+    )
+
+    # Operation nodes with different colors based on operation type
+    for op_type in ["AND", "OR", "XOR"]:
+        op_nodes = [
+            n for n, d in G.nodes(data=True) if d.get("type") == "oper" and op_type in n
+        ]
+        if op_nodes:
+            nx.draw_networkx_nodes(
+                G,
+                pos,
+                nodelist=op_nodes,
+                node_color=op_colors[op_type],
+                node_shape="s",
+                node_size=800,
+            )
+
+    # Intermediate nodes
+    inter_nodes = [n for n, d in G.nodes(data=True) if d.get("type") == "inter"]
+    nx.draw_networkx_nodes(
+        G,
+        pos,
+        nodelist=inter_nodes,
+        node_color="salmon",
+        node_shape="o",
+        node_size=1000,
+    )
+
+    # Draw edges
+    nx.draw_networkx_edges(G, pos, edge_color="gray", arrows=True, arrowsize=20)
+
+    # Add labels
+    nx.draw_networkx_labels(G, pos, font_size=8, font_weight="bold")
+
+    # Create legend
+    legend_elements = [
+        Patch(facecolor="lightgreen", label="Input Values"),
+        Patch(facecolor=op_colors["AND"], label="AND Operation"),
+        Patch(facecolor=op_colors["OR"], label="OR Operation"),
+        Patch(facecolor=op_colors["XOR"], label="XOR Operation"),
+        Patch(facecolor="salmon", label="Intermediate Values"),
+    ]
+    plt.legend(handles=legend_elements, loc="upper left", bbox_to_anchor=(1, 1))
+
+    plt.title("Logic Circuit Graph")
+    plt.axis("off")
+    plt.tight_layout()
+    plt.show()
+
     return 0
 
 
